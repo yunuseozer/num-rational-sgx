@@ -17,6 +17,13 @@
 #![doc(html_root_url = "https://docs.rs/num-rational/0.2")]
 #![no_std]
 
+#![cfg_attr(all(target_env = "sgx", target_vendor = "mesalock"), feature(rustc_private))]
+#[cfg(all(feature = "mesalock_sgx", feature = "std", not(target_env = "sgx")))]
+extern crate sgx_tstd as std;
+
+#[cfg(all(feature = "mesalock_sgx", target_env = "sgx"))]
+extern crate std;
+
 #[cfg(feature = "bigint")]
 extern crate num_bigint as bigint;
 #[cfg(feature = "serde")]
@@ -24,10 +31,6 @@ extern crate serde;
 
 extern crate num_integer as integer;
 extern crate num_traits as traits;
-
-#[cfg(feature = "std")]
-#[cfg_attr(test, macro_use)]
-extern crate std;
 
 use core::cmp;
 use core::fmt;
@@ -52,9 +55,9 @@ use traits::{
 #[allow(missing_docs)]
 pub struct Ratio<T> {
     /// Numerator.
-    numer: T,
+    pub numer: T,
     /// Denominator.
-    denom: T,
+    pub denom: T,
 }
 
 /// Alias for a `Ratio` of machine-sized integers.
@@ -1086,17 +1089,17 @@ impl<T: FromStr + Clone + Integer> FromStr for Ratio<T> {
     fn from_str(s: &str) -> Result<Ratio<T>, ParseRatioError> {
         let mut split = s.splitn(2, '/');
 
-        let n = try!(split.next().ok_or(ParseRatioError {
+        let n = split.next().ok_or(ParseRatioError {
             kind: RatioErrorKind::ParseError
-        }));
-        let num = try!(FromStr::from_str(n).map_err(|_| ParseRatioError {
+        })?;
+        let num = FromStr::from_str(n).map_err(|_| ParseRatioError {
             kind: RatioErrorKind::ParseError
-        }));
+        })?;
 
         let d = split.next().unwrap_or("1");
-        let den = try!(FromStr::from_str(d).map_err(|_| ParseRatioError {
+        let den = FromStr::from_str(d).map_err(|_| ParseRatioError {
             kind: RatioErrorKind::ParseError
-        }));
+        })?;
 
         if Zero::is_zero(&den) {
             Err(ParseRatioError {
@@ -1138,7 +1141,7 @@ where
     {
         use serde::de::Error;
         use serde::de::Unexpected;
-        let (numer, denom): (T, T) = try!(serde::Deserialize::deserialize(deserializer));
+        let (numer, denom): (T, T) = serde::Deserialize::deserialize(deserializer)?;
         if denom.is_zero() {
             Err(Error::invalid_value(
                 Unexpected::Signed(0),
