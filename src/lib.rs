@@ -17,6 +17,13 @@
 #![doc(html_root_url = "https://docs.rs/num-rational/0.2")]
 #![no_std]
 
+#![cfg_attr(all(target_env = "sgx", target_vendor = "mesalock"), feature(rustc_private))]
+#[cfg(all(feature = "mesalock_sgx", feature = "std", not(target_env = "sgx")))]
+extern crate sgx_tstd as std;
+
+#[cfg(all(feature = "mesalock_sgx", target_env = "sgx"))]
+extern crate std;
+
 #[cfg(feature = "bigint")]
 extern crate num_bigint as bigint;
 #[cfg(feature = "serde")]
@@ -24,10 +31,6 @@ extern crate serde;
 
 extern crate num_integer as integer;
 extern crate num_traits as traits;
-
-#[cfg(feature = "std")]
-#[cfg_attr(test, macro_use)]
-extern crate std;
 
 use core::cmp;
 use core::fmt;
@@ -52,9 +55,9 @@ use traits::{
 #[allow(missing_docs)]
 pub struct Ratio<T> {
     /// Numerator.
-    numer: T,
+    pub numer: T,
     /// Denominator.
-    denom: T,
+    pub denom: T,
 }
 
 /// Alias for a `Ratio` of machine-sized integers.
