@@ -17,29 +17,29 @@ exclude = ["/ci/*", "/.travis.yml", "/bors.toml", "/sgx/*"]
 features = ["std", "bigint-std", "serde"]
 
 [dependencies]
-sgx_tstd = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true }
+sgx_tstd = { rev = "v1.1.4-upgrade", git = "https://github.com/yunuseozer/incubator-teaclave-sgx-sdk.git", optional = true }
 
 [dependencies.num-bigint]
 optional = true
 #version = "0.2.0"
 #default-features = false
-git = "https://github.com/mesalock-linux/num-bigint-sgx"
+git = "https://github.com/yunuseozer/num-bigint-sgx"
 
 [dependencies.num-integer]
 #version = "0.1.38"
 #default-features = false
-git = "https://github.com/mesalock-linux/num-integer-sgx"
+git = "https://github.com/yunuseozer/num-integer-sgx"
 
 [dependencies.num-traits]
 #version = "0.2.7"
 #default-features = false
-git = "https://github.com/mesalock-linux/num-traits-sgx"
+git = "https://github.com/yunuseozer/num-traits-sgx"
 
 [dependencies.serde]
 optional = true
 #version = "1.0.0"
 #default-features = false
-git = "https://github.com/mesalock-linux/serde-sgx"
+git = "https://github.com/yunuseozer/serde-sgx"
 
 [features]
 default = ["bigint-std", "std", "mesalock_sgx", "i128"]
